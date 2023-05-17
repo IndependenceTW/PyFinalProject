@@ -1,6 +1,12 @@
 from flask import Flask
+from flask_jwt_extended import JWTManager
+from datetime import timedelta
 
+jwt = JWTManager()
 app = Flask(__name__)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+app.config['JWT_SECRET_KEY'] = "not-secret"
+jwt.init_app(app)
 
 @app.route('/')
 def hello():
