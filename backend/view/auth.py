@@ -28,12 +28,15 @@ def login():
 @auth.route('/register', methods=['POST'])
 def register():
     # check if user exists
+    # if user is not exists, create user, return created code 201
+    # if user is exists, return error code 409
     return jsonify({'msg': 'Register'})
 
 @auth.route('/logout', methods=['GET'])
 @jwt_required()
 def logout():
-    # need to check if the token is in the database
+    # check if user exists
+    # front-end should delete the token
     return jsonify({'msg': 'Logout'})
 
 @auth.route('/new-token', methods=['GET'])
