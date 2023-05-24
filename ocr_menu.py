@@ -23,6 +23,6 @@ def menu_img(img):
     text = pytesseract.image_to_string(img, lang='chi_tra')
 
     #去除奇怪的字元
-    dish_list = re.sub(r'[^\w\s]|[0-9]|[\n\t\b]', '', text)
+    dish_list = re.sub(r'[^\w\s]|[0-9]|[\n\t\b]', '\n', text)
     # print(text)
     return dish_list
