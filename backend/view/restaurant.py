@@ -18,7 +18,7 @@ def get_menu():
     if request.method == 'POST':
         return jsonify({'msg': 'post the menu and update to database'})
 
-@restaurant.route('/menu/ocr', methods=['GET'])
+@restaurant.route('/menu/ocr', methods=['POST'])
 def ocr_menu():
     # get the picture of menu
     # throw into the ocr function
