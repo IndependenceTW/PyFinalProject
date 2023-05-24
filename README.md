@@ -2,5 +2,5 @@
 
 Python Language Project 112 spring
 
-To use OCR (Optical Character Recognition):
-adjust the backend environment variables and install the necessary dependencies, including Tesseract OCR.
+OCR 部分: -安裝 tysseract OCR \n -設置環境路徑
+語言包部分: -把"chi_tra.traineddata"加到環境路徑
