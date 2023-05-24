@@ -23,7 +23,7 @@ def test():
             * print `'test success'` and return true if it work
             * print `'test fail'` and return false if not
     """
-    test_doc_ref = restaurant_collection.document('test')
+    test_doc_ref = db.collection('test').document('test')
     test_doc_ref.set({'test': 'test'})
     test_data = test_doc_ref.get().to_dict()
     if test_data['test'] == 'test':
