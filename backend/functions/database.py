@@ -5,9 +5,11 @@ from firebase_admin import firestore
 from google.cloud.firestore_v1.client import Client
 from google.cloud.firestore_v1.document import DocumentReference
 from google.cloud.firestore_v1.base_document import DocumentSnapshot
+from google.cloud.firestore_v1.base_query import FieldFilter
+import os
 
 
-cred = credentials.Certificate('serviceAccount.json')
+cred = credentials.Certificate(os.path.abspath(os.path.dirname(__file__)) + '/serviceAccount.json')
 firebase_admin.initialize_app(cred)
 db: Client = firestore.client()
 restaurant_collection = db.collection('restaurant')
@@ -192,7 +194,6 @@ def get_all_food() -> List[Dict[str, Any]]:
         food_list.append(get_food(food_ref.id))
     return food_list
 
-
 def delete_food(id: str):
     """delete a food data
 
@@ -253,6 +254,24 @@ def get_user(id: str) -> Union[Dict[str, Any], None]:
     user_data['id'] = id
     return user_data
 
+def get_user_id_by_account(account: str) -> Union[Dict[str, Any], None]:
+    """get a user data by account
+
+    Args:
+        account (str): the user account
+
+    Returns:
+        Union[Dict[str, Any], None]: a Dict if data found, None if not.
+        keys are `'id'` `'account'` `'password'`, values are the data correspounded.
+    """
+    filter = FieldFilter('account', '==', account)
+    user_ref_list: List[DocumentSnapshot] = user_collection.where(filter=filter).get()
+    if len(user_ref_list) == 0:
+        return None
+    else:
+        user_data = user_ref_list[0].to_dict()
+        user_data['id'] = user_ref_list[0].id
+        return user_data
 
 def delete_user(id: str):
     """delete a user data

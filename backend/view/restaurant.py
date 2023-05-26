@@ -1,20 +1,32 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+import functions.database as db
+import functions.ocr_menu as ocr
+import PIL.Image as Image
 
 restaurant = Blueprint('restaurant', __name__)
 
 @restaurant.route('/', methods=['GET'])
-def get_restaurant():
-    return jsonify({'msg': 'Get Restaurant list'})
+def get_all_restaurant():
+    list = db.get_all_restaurant()
+    json = jsonify(list)
+    return json, 200
 
 @restaurant.route('/id=<string:restaurant_id>', methods=['GET'])
 def get_restaurant_by_id(restaurant_id):
-    return jsonify({'msg': 'Get Restaurant by id'})
+    info = db.get_restaurant(id=restaurant_id)
+    return jsonify(info), 200
 
 @restaurant.route('/id=<string:restaurant_id>/menu', methods=['GET','POST'])
-def get_menu():
+def get_menu(restaurant_id):
     if request.method == 'GET':
-        return jsonify({'msg': 'get the menu for the restaurant'})
+        all_foods = db.get_all_food()
+        foods = []
+        for food in all_foods:
+            if food['restaurant_id'] == restaurant_id:
+                foods.append(food)
+        return jsonify(foods), 200
+
     if request.method == 'POST':
         return jsonify({'msg': 'post the menu and update to database'})
 
@@ -22,7 +34,10 @@ def get_menu():
 def ocr_menu():
     # get the picture of menu
     # throw into the ocr function
-    return jsonify({'/msg': 'return ocr things'})
+    img = request.files['img']
+    img = Image.open(img)
+    dishs = ocr.menu_img(img)
+    return jsonify(dishs), 200
 
 @restaurant.route('/random', methods=['GET'])
 @jwt_required()
