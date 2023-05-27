@@ -394,3 +394,4 @@ def get_user_search_restaurant_type_counts(user_id: str) -> Dict[str, int]:
             if record['user_id'] == user_id:
                 type_counts[restaurant['type']] += 1
     return type_counts
+
