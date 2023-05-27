@@ -3,8 +3,10 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 import functions.database as db
 import functions.ocr_menu as ocr
 import PIL.Image as Image
+from model.recommendation import RecommendationSystem
 
 restaurant = Blueprint('restaurant', __name__)
+recommendation = RecommendationSystem();
 
 @restaurant.route('/', methods=['GET'])
 def get_all_restaurant():
@@ -45,6 +47,7 @@ def get_random_restaurant():
     user = get_jwt_identity()
     # get the user's prefer
     # throw user's prefer into the model
+    recommendation.recommend(user_id=user)
     # return he may want to eat
     return jsonify({'msg': 'Get Random Restaurant'})
 
@@ -53,8 +56,17 @@ def get_random_restaurant():
 def get_specify_restaurant():
     # get restaurant by specify conditions
     user = get_jwt_identity()
-    # get the user's prefer
-    # throw conditions and prefer into the model
-    # return he may want to eat
+    restaurant_list = recommendation.recommend(user_id=user, restaurant_options={'restaurant_type': '麵食', 'mean_price': 1}) #TODO get the specify conditions from the request
     return jsonify({'msg': 'Get Specify Restaurant'})
+
+@restaurant.route('/restaurant=<string:restaurant_id>/record', methods=['POST'])
+@jwt_required()
+def record_food(restaurant_id):
+    user = get_jwt_identity()
+    # record the food the user eat
+    db.create_record(user, restaurant_id)
+    recommendation.update_results(user_id=user, choice=1) # TODO choice should be the food's number
+    # return the food's information
+    return {}, 200
+
 
