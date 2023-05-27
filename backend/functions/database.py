@@ -119,6 +119,8 @@ def delete_restaurant(id: str):
     Args:
         id (str): the restaurant id
     """
+    clear_record_where_restaurant_is(id)
+    clear_food_where_restaurant_is(id)
     restaurant_ref = restaurant_collection.document(id)
     restaurant_ref.delete()
 
@@ -204,6 +206,18 @@ def delete_food(id: str):
     food_ref.delete()
 
 
+def clear_food_where_restaurant_is(restaurant_id: str):
+    """clear all food that involve a specific restaurant
+
+    Args:
+        restaurant_id (str): the restaurant id
+    """
+    all_food = get_all_food()
+    for food in all_food:
+        if food['belong_restaurant_id'] == restaurant_id:
+            delete_food(food['id'])
+
+
 def create_user(account: str, password: str):
     """ create a user data in database
         ---
@@ -279,33 +293,34 @@ def delete_user(id: str):
     Args:
         id (str): the user id
     """
+    clear_record_where_user_is(id)
     user_ref = user_collection.document(id)
     user_ref.delete()
 
 
-def create_record(user_id: str, food_id: str):
+def create_record(user_id: str, restaurant_id: str):
     """ create a record data in database
         ---
         Args:
             user_id (str): the id of the user that create this this record
-            food_id (str): the id of the food that the user search
+            restaurant_id (str): the id of the restaurant that the user search
 
         Returns:
             :class:`str`: the record id
     """
-    new_record_dict = {'user_id': user_id, 'food_id': food_id}
+    new_record_dict = {'user_id': user_id, 'restaurant_id': restaurant_id}
     result = record_collection.add(new_record_dict)
     new_record_ref: DocumentReference = result[1]
     return new_record_ref.id
 
 
-def update_record(id: str, user_id: Union[str, None], food_id: Union[str, None]):
+def update_record(id: str, user_id: Union[str, None], restaurant_id: Union[str, None]):
     """update a existed usrecorder data
 
     Args:
         id (str): the record id
         user_id (str): the id of the user that create this this record. would not update if not given.
-        food_id (str): the id of the food that the user search. would not update if not given.
+        restaurant_id (str): the id of the restaurant that the user search. would not update if not given.
 
     * Notice that if there is no data reference to the id, might have Error occur.
     """
@@ -313,8 +328,8 @@ def update_record(id: str, user_id: Union[str, None], food_id: Union[str, None])
     record_dict = {}
     if user_id != None:
         record_dict['user_id'] = user_id
-    if food_id != None:
-        record_dict['food_id'] = food_id
+    if restaurant_id != None:
+        record_dict['restaurant_id'] = restaurant_id
     record_ref.update(record_dict)
 
 
@@ -326,7 +341,7 @@ def get_record(id: str) -> Union[Dict[str, Any], None]:
 
     Returns:
         Union[Dict[str, Any], None]: a Dict if data found, None if not.
-        keys are `'id'` `'user_id'` `'food_id'`,
+        keys are `'id'` `'user_id'` `'restaurant_id'`,
         values are the data correspounded.
     """
     record_ref = record_collection.document(id)
@@ -340,7 +355,7 @@ def get_all_record() -> List[Dict[str, Any]]:
 
     Returns:
         List[Dict[str, Any]]: a List contains several Dict.
-        each Dict keys are `'user_id'` `'food_id'`,
+        each Dict keys are `'user_id'` `'restaurant_id'`,
         values are the data correspounded.
     """
     record_ref_list: List[DocumentSnapshot] = record_collection.get()
@@ -369,47 +384,37 @@ def clear_record_where_user_is(user_id: str):
     all_record = get_all_record()
     for record in all_record:
         if record['user_id'] == user_id:
-            delete_food(record['id'])
+            delete_record(record['id'])
 
 
-def get_user_search_food_type_counts(user_id: str) -> Dict[str, int]:
-    """ get the times of each food that have been searched by a specific user
+def clear_record_where_restaurant_is(restaurant_id: str):
+    """clear all record that involve a specific restaurant
 
     Args:
-        user_id (str): the user id
-
-    Returns:
-        Dict[str, int]: keys is each type, values is the times been searched of the type
+        restaurant_id (str): the restaurant id
     """
     all_record = get_all_record()
-    type_counts: Dict[str, int] = {}
     for record in all_record:
-        food = get_food(record['food_id'])
-        if food != None:
-            if food['type'] not in type_counts.keys():
-                type_counts[food['type']] = 0
-            if record['user_id'] == user_id:
-                type_counts[food['type']] += 1
-    return type_counts
+        if record['restaurant_id'] == restaurant_id:
+            delete_record(record['id'])
 
 
-def get_user_search_restaurant_type_counts(user_id: str) -> Dict[str, int]:
+def get_user_search_restaurant_counts(user_id: str) -> Dict[str, int]:
     """ get the times of each restaurant that have been searched by a specific user
 
     Args:
         user_id (str): the user id
 
     Returns:
-        Dict[str, int]: keys is each type, values is the times been searched of the type
+        Dict[str, int]: keys is each restaurant's id, values is the times been searched
     """
     all_record = get_all_record()
-    type_counts: Dict[str, int] = {}
+    restaurant_counts: Dict[str, int] = {}
     for record in all_record:
-        food = get_food(record['food_id'])
-        restaurant = get_restaurant(food['belong_restaurant_id'])
+        restaurant = get_restaurant(record['restaurant_id'])
         if restaurant != None:
-            if restaurant['type'] not in type_counts.keys():
-                type_counts[restaurant['type']] = 0
+            if restaurant['id'] not in restaurant_counts.keys():
+                restaurant_counts[restaurant['id']] = 0
             if record['user_id'] == user_id:
-                type_counts[restaurant['type']] += 1
-    return type_counts
+                restaurant_counts[restaurant['id']] += 1
+    return restaurant_counts
