@@ -117,6 +117,8 @@ def delete_restaurant(id: str):
     Args:
         id (str): the restaurant id
     """
+    clear_record_where_restaurant_is(id)
+    clear_food_where_restaurant_is(id)
     restaurant_ref = restaurant_collection.document(id)
     restaurant_ref.delete()
 
@@ -203,6 +205,18 @@ def delete_food(id: str):
     food_ref.delete()
 
 
+def clear_food_where_restaurant_is(restaurant_id: str):
+    """clear all food that involve a specific restaurant
+
+    Args:
+        restaurant_id (str): the restaurant id
+    """
+    all_food = get_all_food()
+    for food in all_food:
+        if food['belong_restaurant_id'] == restaurant_id:
+            delete_food(food['id'])
+
+
 def create_user(account: str, password: str):
     """ create a user data in database
         ---
@@ -260,6 +274,7 @@ def delete_user(id: str):
     Args:
         id (str): the user id
     """
+    clear_record_where_user_is(id)
     user_ref = user_collection.document(id)
     user_ref.delete()
 
@@ -350,6 +365,18 @@ def clear_record_where_user_is(user_id: str):
     all_record = get_all_record()
     for record in all_record:
         if record['user_id'] == user_id:
+            delete_record(record['id'])
+
+
+def clear_record_where_restaurant_is(restaurant_id: str):
+    """clear all record that involve a specific restaurant
+
+    Args:
+        restaurant_id (str): the restaurant id
+    """
+    all_record = get_all_record()
+    for record in all_record:
+        if record['restaurant_id'] == restaurant_id:
             delete_record(record['id'])
 
 
