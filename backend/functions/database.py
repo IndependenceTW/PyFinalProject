@@ -353,44 +353,22 @@ def clear_record_where_user_is(user_id: str):
             delete_record(record['id'])
 
 
-def get_user_search_restaurant_type_counts(user_id: str) -> Dict[str, int]:
+def get_user_search_restaurant_counts(user_id: str) -> Dict[str, int]:
     """ get the times of each restaurant that have been searched by a specific user
 
     Args:
         user_id (str): the user id
 
     Returns:
-        Dict[str, int]: keys is each type, values is the times been searched of the type
+        Dict[str, int]: keys is each restaurant's id, values is the times been searched
     """
     all_record = get_all_record()
-    type_counts: Dict[str, int] = {}
+    restaurant_counts: Dict[str, int] = {}
     for record in all_record:
         restaurant = get_restaurant(record['restaurant_id'])
         if restaurant != None:
-            if restaurant['type'] not in type_counts.keys():
-                type_counts[restaurant['type']] = 0
+            if restaurant['id'] not in restaurant_counts.keys():
+                restaurant_counts[restaurant['id']] = 0
             if record['user_id'] == user_id:
-                type_counts[restaurant['type']] += 1
-    return type_counts
-
-
-# def get_user_search_restaurant_type_counts(user_id: str) -> Dict[str, int]:
-#     """ get the times of each restaurant that have been searched by a specific user
-
-#     Args:
-#         user_id (str): the user id
-
-#     Returns:
-#         Dict[str, int]: keys is each type, values is the times been searched of the type
-#     """
-#     all_record = get_all_record()
-#     type_counts: Dict[str, int] = {}
-#     for record in all_record:
-#         food = get_food(record['food_id'])
-#         restaurant = get_restaurant(food['belong_restaurant_id'])
-#         if restaurant != None:
-#             if restaurant['type'] not in type_counts.keys():
-#                 type_counts[restaurant['type']] = 0
-#             if record['user_id'] == user_id:
-#                 type_counts[restaurant['type']] += 1
-#     return type_counts
+                restaurant_counts[restaurant['id']] += 1
+    return restaurant_counts
