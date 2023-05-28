@@ -45,28 +45,27 @@ def ocr_menu():
 @jwt_required()
 def get_random_restaurant():
     user = get_jwt_identity()
-    # get the user's prefer
-    # throw user's prefer into the model
-    recommendation.recommend(user_id=user)
-    # return he may want to eat
-    return jsonify({'msg': 'Get Random Restaurant'})
+    list = recommendation.recommend(user_id=user)
+    return jsonify(list), 200
 
 @restaurant.route('/specify', methods=['GET'])
 @jwt_required()
 def get_specify_restaurant():
     # get restaurant by specify conditions
     user = get_jwt_identity()
-    restaurant_list = recommendation.recommend(user_id=user, restaurant_options={'restaurant_type': '麵食', 'mean_price': 1}) #TODO get the specify conditions from the request
+    data = request.get_json()
+    list = recommendation.recommend(user_id=user, restaurant_options={'restaurant_type': data.type, 'mean_price': data.mean_price}) #TODO get the specify conditions from the request
     return jsonify({'msg': 'Get Specify Restaurant'})
 
-@restaurant.route('/restaurant=<string:restaurant_id>/record', methods=['POST'])
+@restaurant.route('/record', methods=['POST'])
 @jwt_required()
-def record_food(restaurant_id):
+def record_food():
     user = get_jwt_identity()
-    # record the food the user eat
+    data = request.get_json()
+    restaurant_id = data.restaurant_id
+    choice = data.choice
     db.create_record(user, restaurant_id)
-    recommendation.update_results(user_id=user, choice=1) # TODO choice should be the food's number
-    # return the food's information
-    return {}, 200
+    recommendation.update_results(user_id=user, choice=choice) 
+    return jsonify({'msg': 'recorded'}), 200
 
 
