@@ -22,7 +22,7 @@ const getMenu = async (id) => {
         redirect: 'follow'
     };
 
-    return fetch("http://127.0.0.1:5000/restaurant/id=1PPekYsTDiAYSkp4H55H/menu", requestOptions)
+    return fetch("http://127.0.0.1:5000/restaurant/id="+ id + "/menu", requestOptions)
         .then(response => response.json())
         .catch(error => console.log('error', error));
 }
@@ -56,7 +56,7 @@ export default function RestaurantDetailPage() {
                     <Typography variant="h3" gutterBottom>
                         {restaurant && restaurant.name}
                     </Typography>
-                    <Button variant="contained" component={RouterLink} to="/restaurant/:id/addmenu" startIcon={<Iconify icon="eva:plus-fill" />}>
+                    <Button variant="contained" component={RouterLink} onClick={function(){window.location.href="/restaurant/"+id+"/addmenu"}} startIcon={<Iconify icon="eva:plus-fill" />}>
                         Add Menu
                     </Button>
                 </Stack>

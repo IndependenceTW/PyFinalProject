@@ -38,8 +38,11 @@ def get_menu(restaurant_id):
 
 
 @restaurant.route('/id=<string:restaurant_id>/menu', methods=['POST'])
+@jwt_required()
 def add_food(restaurant_id):
-    # TODO
+    data = request.get_json()
+    for d in data:
+        db.create_food(restaurant_id, d['name'], d['price'])
     return jsonify({'msg': 'post the menu and update to database'})
 
 @restaurant.route('/menu/ocr', methods=['POST'])

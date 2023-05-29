@@ -6,3 +6,4 @@ firebase-admin
 google-cloud-firestore
 torch
 torchvision
+flask-cors

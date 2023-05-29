@@ -13,7 +13,7 @@ const FileInput = (setForm) => {
         if (selectedImage) {
             setImageUrl(URL.createObjectURL(selectedImage));
             var formData = new FormData();
-            formData.append("image", selectedImage, selectedImage.name);
+            formData.append("img", selectedImage, selectedImage.name);
             setForm.setForm(formData);
         }
     }, [selectedImage]);
