@@ -54,10 +54,10 @@ export default function RestaurantDetailPage() {
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h3" gutterBottom>
-                        Restaurant list
+                        {restaurant && restaurant.name}
                     </Typography>
                     <Button variant="contained" component={RouterLink} to="/restaurant/:id/addmenu" startIcon={<Iconify icon="eva:plus-fill" />}>
-                        New Restaurant
+                        Add Menu
                     </Button>
                 </Stack>
                 {restaurant && restaurant.mean_price === 0 && <Typography variant="subtitle1">價格範圍：100元以下</Typography>}

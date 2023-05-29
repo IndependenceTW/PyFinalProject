@@ -6,6 +6,7 @@ import DashboardLayout from "./components/Layout"
 import RestaurantsPage from "./pages/restaurant-page";
 import NewRestaurant from "./pages/new-restaurant-page";
 import RestaurantDetailPage from "./pages/restaurant-detail-page";
+import NewMenuPage from "./pages/new-menu-page";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/restaurant" element={<RestaurantsPage />} />
           <Route path="/restaurant/create" element={<NewRestaurant />} />
           <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
+          <Route path="/restaurant/:id/addmenu" element={<NewMenuPage />} />
         </Route>
       </Routes>
   );

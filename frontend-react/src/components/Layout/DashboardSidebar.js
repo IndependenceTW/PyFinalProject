@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { React, useEffect, useState } from 'react';
+import { React, useEffect } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
-import { Box, Link, Drawer, Typography, Avatar, Stack, Button } from '@mui/material';
+import { Box, Drawer, Button } from '@mui/material';
 // mock
 // hooks
 import useResponsive from './useResponsive';
@@ -48,7 +48,6 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
   const isDesktop = useResponsive('up', 'lg');
   const cookies = new Cookies();
   const token = cookies.get('token');
-  const username = cookies.get('username');
 
   useEffect(() => {
     if (isOpenSidebar) {
@@ -58,7 +57,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
   }, [pathname]);
 
   const handleLogout = () => {
-    cookies.remove('token');
+    cookies.remove('token', { path: '/' });
     window.location.reload();
   }
 

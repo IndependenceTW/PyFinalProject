@@ -65,9 +65,9 @@ def get_specify_restaurant():
     user = get_jwt_identity()
     data = request.get_json()
     list = recommendation.recommend(user_id=user, restaurant_options={'restaurant_type': data.type, 'mean_price': data.mean_price}) #TODO get the specify conditions from the request
-    return jsonify({'msg': 'Get Specify Restaurant'})
+    return jsonify({'msg': 'Get Specify Restaurant'}), 200
 
-@restaurant.route('/record', methods=['POST'])
+@restaurant.route('/recommend/record', methods=['POST'])
 @jwt_required()
 def record_food():
     user = get_jwt_identity()
@@ -78,4 +78,12 @@ def record_food():
     recommendation.update_results(user_id=user, choice=choice) 
     return jsonify({'msg': 'recorded'}), 200
 
+@restaurant.route('/record', methods=['POST'])
+@jwt_required()
+def record_restaurant():
+    user = get_jwt_identity()
+    data = request.get_json()
+    restaurant_id = data['restaurant_id']
+    db.create_record(user, restaurant_id)
+    return jsonify({'msg': 'recorded'}), 200
 

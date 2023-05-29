@@ -3,6 +3,7 @@ import Page from "../components/Page";
 import { Container, Stack, Typography, Button, Grid, Card, CardContent, CardActions} from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import Iconify from "../components/Iconify";
+import record from "../components/record";
 
 export default function RestaurantsPage() {
     const [restaurants, setRestaurants] = useState([]);
@@ -14,8 +15,7 @@ export default function RestaurantsPage() {
     }
 
     const detailClick = (id) => {
-        console.log('hello');
-        
+        record(id, -1);
         window.location.href = "/restaurant/"+id;
     }
 

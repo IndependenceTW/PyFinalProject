@@ -4,17 +4,11 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-// import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-// import { getCookie, setCookie } from '../../global/api/cookie';
 import { useNavigate } from "react-router-dom";
 import Cookies from 'universal-cookie';
-// import GetTwilioToken from '../../global/api/getTwilioToken';
-
-
-
 
 const theme = createTheme();
 
