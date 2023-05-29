@@ -410,6 +410,11 @@ def get_user_search_restaurant_counts(user_id: str) -> Dict[str, int]:
     """
     all_record = get_all_record()
     restaurant_counts: Dict[str, int] = {}
+    restaurant_list = get_all_restaurant()
+    
+    for restaurant in restaurant_list:
+        restaurant_counts[restaurant['id']] = 0
+    
     for record in all_record:
         restaurant = get_restaurant(record['restaurant_id'])
         if restaurant != None:

@@ -61,7 +61,6 @@ export default function SignIn() {
                 const body = response.json();
                 body.then(data => {
                     cookies.set('token', data.token, { path: '/' });
-                    console.log(cookies.get('token'));
                     navigate('/')
                 }).catch(error => console.log('error', error));
             }
@@ -136,7 +135,7 @@ export default function SignIn() {
                                 </Link>
                             </Grid> */}
                             <Grid item>
-                                <Link href="/regist" variant="body2">
+                                <Link href="/register" variant="body2">
                                     {"Don't have an account? Sign up here"}
                                 </Link>
                             </Grid>

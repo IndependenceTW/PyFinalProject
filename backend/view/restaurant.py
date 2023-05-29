@@ -9,28 +9,38 @@ restaurant = Blueprint('restaurant', __name__)
 recommendation = RecommendationSystem();
 
 @restaurant.route('/', methods=['GET'])
-def get_all_restaurant():
+def restaurants():
     list = db.get_all_restaurant()
     json = jsonify(list)
     return json, 200
 
+@restaurant.route('/', methods=['POST'])
+@jwt_required()
+def create_restaurant():
+    data = request.get_json()
+    db.create_restaurant(data['name'], data['address'], data['type'], data['price'])
+    return jsonify({'msg': 'post the restaurant and update to database'}), 201;
+
+        
 @restaurant.route('/id=<string:restaurant_id>', methods=['GET'])
 def get_restaurant_by_id(restaurant_id):
     info = db.get_restaurant(id=restaurant_id)
     return jsonify(info), 200
 
-@restaurant.route('/id=<string:restaurant_id>/menu', methods=['GET','POST'])
+@restaurant.route('/id=<string:restaurant_id>/menu', methods=['GET'])
 def get_menu(restaurant_id):
-    if request.method == 'GET':
-        all_foods = db.get_all_food()
-        foods = []
-        for food in all_foods:
-            if food['restaurant_id'] == restaurant_id:
-                foods.append(food)
-        return jsonify(foods), 200
+    all_foods = db.get_all_food()
+    foods = []
+    for food in all_foods:
+        if food['belong_restaurant_id'] == restaurant_id:
+            foods.append(food)
+    return jsonify(foods), 200
 
-    if request.method == 'POST':
-        return jsonify({'msg': 'post the menu and update to database'})
+
+@restaurant.route('/id=<string:restaurant_id>/menu', methods=['POST'])
+def add_food(restaurant_id):
+    # TODO
+    return jsonify({'msg': 'post the menu and update to database'})
 
 @restaurant.route('/menu/ocr', methods=['POST'])
 def ocr_menu():

@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from ppo import PPO
+from model.ppo import PPO
 from functions.database import get_user_search_restaurant_counts, get_all_restaurant
 
 

@@ -8,8 +8,9 @@ auth = Blueprint('auth', __name__)
 @jwt_required()
 def get_auth():
     identity = get_jwt_identity()
+    username = get_user(id=identity).get('account')
     if identity is not None:
-        return jsonify({'msg': 'hello, ' + identity}), 200
+        return jsonify({'msg': 'hello, ' + username}), 200
     else:
         return jsonify({'msg': 'non-auth'}), 401
 
@@ -17,9 +18,10 @@ def get_auth():
 def login():
     username = request.json.get("username")
     password = request.json.get("password")
-
+    
     # check the user is valid
     user = get_user_id_by_account(username)
+    print(user)
     # # if user is not exist, return error code 401
     print(user)
     if user == None:
@@ -35,6 +37,9 @@ def login():
 def register():
     # check if user exists
     user = get_user_id_by_account(request.json.get("username"))
+    username = request.json.get("username")
+    password = request.json.get("password")
+
     # if user is not exists, create user, return created code 201
     if user == None:
         id = create_user(request.json.get("username"), request.json.get("password"))
@@ -42,13 +47,6 @@ def register():
     # if user is exists, return error code 409
     else: 
         return jsonify({'msg': 'User already exists'}), 409
-
-@auth.route('/logout', methods=['GET'])
-@jwt_required()
-def logout():
-    # check if user exists
-    # front-end should delete the token
-    return jsonify({'msg': 'Logout'})
 
 @auth.route('/new-token', methods=['GET'])
 @jwt_required()

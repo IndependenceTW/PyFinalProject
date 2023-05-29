@@ -4,3 +4,5 @@ Pillow
 pytesseract
 firebase-admin
 google-cloud-firestore
+torch
+torchvision
