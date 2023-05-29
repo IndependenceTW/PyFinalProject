@@ -50,7 +50,11 @@ class AsyncExperienceBuffer:
         self.num_obs = num_obs
         self.tensor_dict = {}
         self.create_buffer()
-        self.run_idx = torch.zeros([1000], dtype=torch.long)
+        self.run_idx = {}
+
+    def get(self, env_ids, key):
+        idx = torch.Tensor([self.run_idx[i] for i in env_ids]).to(dtype=torch.long)
+        return self.tensor_dict[key][idx]
 
     def create_buffer(self):
         size = self.size * 2
@@ -63,13 +67,14 @@ class AsyncExperienceBuffer:
 
     def pre_update_data(self, env_ids, datas: dict):
         idx = (self.status == 0).nonzero().squeeze(-1)[:len(env_ids)]
-        self.run_idx[env_ids] = idx
+        for i, v in zip(env_ids, idx.tolist()):
+            self.run_idx[i] = v
         for k, v in datas.items():
             self.tensor_dict[k][idx] = v
         self.status[idx] = -1
 
     def post_update_data(self, env_ids, datas: dict):
-        idx = self.run_idx[env_ids]
+        idx = torch.Tensor([self.run_idx.pop(i) for i in env_ids]).to(dtype=torch.long)
         for k, v in datas.items():
             self.tensor_dict[k][idx] = v
         self.status[self.status > 0] += 1
@@ -120,8 +125,9 @@ class PPO(nn.Module):
         return torch.softmax(actions, dim=-1)
 
     def update_post_datas(self, env_ids, next_obs, choice):
-        prob = torch.softmax(self.dataset.tensor_dict['actions'], dim=-1)
-        rewards = prob[self.dataset.run_idx[env_ids], choice]
+        actions = self.dataset.get(env_ids, 'actions')
+        prob = torch.softmax(actions, dim=-1)
+        rewards = prob[torch.arange(len(env_ids)), choice]
         self.dataset.post_update_data(env_ids, {'rewards': rewards, 'next_obs': next_obs})
         if self.dataset.full():
             self._train_epoch()
@@ -194,11 +200,11 @@ if __name__ == '__main__':
 
     for steps in range(10000):
         obs = record / steps if steps else record
-        action = model.get_action(env_ids, obs)
+        action = model.get_action(env_ids.tolist(), obs)
         choice = torch.multinomial(dist_w, 1).squeeze()
         reward = action[env_ids, choice]
         record[env_ids, choice] += 1
         next_obs = record / (steps + 1)
-        model.update_post_datas(env_ids, next_obs, choice)
+        model.update_post_datas(env_ids.tolist(), next_obs, choice)
 
 

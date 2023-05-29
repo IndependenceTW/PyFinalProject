@@ -4,14 +4,6 @@ import torch
 from model.ppo import PPO
 from functions.database import get_user_search_restaurant_counts, get_all_restaurant
 
-
-# def get_user_search_restaurant_counts(user_id):
-#     return {'a': 0, 'b': 2, 'c': 1}
-#
-# def get_all_restaurant():
-#     return [{'id': 'b'}, {'id': 'a'}, {'id': 'c'}]
-
-
 class RecommendationSystem:
     def __init__(self):
         self._obs_size = 50
@@ -25,7 +17,8 @@ class RecommendationSystem:
             obs[:, self._restId2nnId_map[k]] = v
         return obs
 
-    def recommend(self, user_id: int, restaurant_options: dict = {}):
+
+    def recommend(self, user_id: str, restaurant_options: dict = {}):
         user_data = get_user_search_restaurant_counts(user_id)
 
         for k in user_data.keys():
@@ -47,24 +40,22 @@ class RecommendationSystem:
 
         # sort meal
         preference = torch.Tensor([user_data[i] for i in restaurants_id])
-        user_ids = torch.Tensor([user_id]).to(dtype=torch.long)
         obs = self.get_obs(user_data)
-        action = self._model.get_action(user_ids, obs).squeeze()
+        action = self._model.get_action([user_id], obs).squeeze()
         if self._model.num_epochs > 100:
             preference = torch.Tensor([action[self._restId2nnId_map[i]].item() for i in restaurants_id])
         order_idx = preference.sort(dim=-1, descending=True)[1]
         return list(restaurants_id[order_idx])
 
-    def update_results(self, user_id: int, choice: int):
+    def update_results(self, user_id: str, choice: int):
         user_data = get_user_search_restaurant_counts(user_id)
-        env_ids = torch.Tensor([user_id]).to(dtype=torch.long)
         next_obs = self.get_obs(user_data)
         # next_obs = torch.zeros(5)
         choice = torch.Tensor([choice]).to(dtype=torch.long)
-        self._model.update_post_datas(env_ids, next_obs, choice)
+        self._model.update_post_datas([user_id], next_obs, choice)
 
 
 if __name__ == '__main__':
     rs = RecommendationSystem()
-    print(rs.recommend(0))
-    rs.update_results(0, 2)
+    print(rs.recommend('asdf'))
+    rs.update_results('asdf', 2)

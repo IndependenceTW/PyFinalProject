@@ -11,6 +11,11 @@ const navConfig = [
     path: '/restaurant',
     icon: getIcon('material-symbols:restaurant'),
   },
+  {
+    title: 'Recommendation',
+    path: '/recommend',
+    icon: getIcon('mdi:food'),
+  }
 
   // {
   //   title: 'login',

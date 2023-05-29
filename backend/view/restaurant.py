@@ -61,22 +61,30 @@ def get_random_restaurant():
     list = recommendation.recommend(user_id=user)
     return jsonify(list), 200
 
-@restaurant.route('/specify', methods=['GET'])
+@restaurant.route('/specify', methods=['POST'])
 @jwt_required()
 def get_specify_restaurant():
     # get restaurant by specify conditions
     user = get_jwt_identity()
     data = request.get_json()
-    list = recommendation.recommend(user_id=user, restaurant_options={'restaurant_type': data.type, 'mean_price': data.mean_price}) #TODO get the specify conditions from the request
-    return jsonify({'msg': 'Get Specify Restaurant'}), 200
+    option = {}
+
+    if data['type'] != '':
+        option['type'] = data['type']
+    if data['price'] != '':
+        option['mean_price'] = data['price']
+    
+    print(data['type'], data['price'])
+    list = recommendation.recommend(user_id=user, restaurant_options=option)
+    return jsonify(list), 200
 
 @restaurant.route('/recommend/record', methods=['POST'])
 @jwt_required()
 def record_food():
     user = get_jwt_identity()
     data = request.get_json()
-    restaurant_id = data.restaurant_id
-    choice = data.choice
+    restaurant_id = data['restaurant_id']
+    choice = data['choice']
     db.create_record(user, restaurant_id)
     recommendation.update_results(user_id=user, choice=choice) 
     return jsonify({'msg': 'recorded'}), 200

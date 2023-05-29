@@ -7,6 +7,7 @@ import RestaurantsPage from "./pages/restaurant-page";
 import NewRestaurant from "./pages/new-restaurant-page";
 import RestaurantDetailPage from "./pages/restaurant-detail-page";
 import NewMenuPage from "./pages/new-menu-page";
+import RecommendPage from "./pages/recommend-page";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/restaurant/create" element={<NewRestaurant />} />
           <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
           <Route path="/restaurant/:id/addmenu/" element={<NewMenuPage />} />
+          <Route path="/recommend" element={<RecommendPage/>} />
         </Route>
       </Routes>
   );
