@@ -1,5 +1,5 @@
 
-import { Box, Typography, Card, FormControl, MenuItem, InputLabel, CardContent, CardActions, TextField, Button, Select, Grid } from "@mui/material";
+import { Box, Typography, Card, FormControl, MenuItem, InputLabel, CardContent, CardActions, Button, Select, Grid, Divider } from "@mui/material";
 import React, { useEffect } from "react";
 import Cookies from 'universal-cookie';
 import record from "../components/record";
@@ -12,6 +12,7 @@ export default function RecommendPage() {
     const [price, setPrice] = React.useState('');
     const [resultList, setResultList] = React.useState([]);
     const [infoList, setInfoList] = React.useState([]);
+    const [size, setSize] = React.useState(0);
 
     const handleTypeChange = (event) => {
         setType(event.target.value);
@@ -38,6 +39,7 @@ export default function RecommendPage() {
         for (var i = 0; i < resultList.length; i++) {
             getRestaurant(resultList[i]);
         }
+        setSize(3);
     }, [resultList])
 
     const detailClick = (id, index) => {
@@ -80,27 +82,53 @@ export default function RecommendPage() {
             return (
                 <div>
                     <Typography component="h1" variant="h5">為您推薦</Typography>
-                    <Grid container spacing={3}>
-                        {
-                            infoList.map((restaurant, index) => (
-                                <Grid item key={index}>
-                                    <Card>
-                                        <CardContent>
-                                            <Typography sx={{fontSize: 14}} color="text.secondary" gutterBottom>{restaurant.id}</Typography>
-                                            <Typography variant="h5">{restaurant.name}</Typography>
-                                            <Typography sx={{mb: 1.5}} color="text.secondary">{restaurant.address}</Typography>
-                                            <Typography variant="body2">{restaurant.type}</Typography>
-                                        </CardContent>
-                                        <CardActions>
-                                            <Button size="small" onClick={function() {detailClick(restaurant.id, index);}}>
-                                                show detail
-                                            </Button>
-                                        </CardActions>
-                                    </Card>
-                                </Grid>
-                            ))
-                        }
-                    </Grid>
+                    {
+                        infoList.slice(0, 1).map((restaurant, index) => (
+                            <Card>
+                                <CardContent>
+                                    <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>{restaurant.id}</Typography>
+                                    <Typography variant="h5">{restaurant.name}</Typography>
+                                    <Typography sx={{ mb: 1.5 }} color="text.secondary">{restaurant.address}</Typography>
+                                    <Typography variant="body2">{restaurant.type}</Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <Button size="small" onClick={function () { detailClick(restaurant.id, index); }}>
+                                        show detail
+                                    </Button>
+                                </CardActions>
+                            </Card>
+                        ))
+                    }
+                    <Divider sx={{my: 2}} />
+                    {infoList.length > 1 &&
+                        <>
+                            <Typography component="h1" variant="h5">還可以參考</Typography>
+                            <Grid container spacing={3}>
+                                {
+                                    infoList.slice(1, Math.min(infoList.length, size)).map((restaurant, index) => (
+                                        <Grid item key={index}>
+                                            <Card>
+                                                <CardContent>
+                                                    <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>{restaurant.id}</Typography>
+                                                    <Typography variant="h5">{restaurant.name}</Typography>
+                                                    <Typography sx={{ mb: 1.5 }} color="text.secondary">{restaurant.address}</Typography>
+                                                    <Typography variant="body2">{restaurant.type}</Typography>
+                                                </CardContent>
+                                                <CardActions>
+                                                    <Button size="small" onClick={function () { detailClick(restaurant.id, index); }}>
+                                                        show detail
+                                                    </Button>
+                                                </CardActions>
+                                            </Card>
+                                        </Grid>
+                                    ))
+                                }
+                            </Grid>
+                        </>
+                    }
+                    {
+                        size !== infoList.length && <Button variant='contained' color="primary" sx={{ m: 1, minWidth: 120 }} onClick={() => setSize(Math.min(size + 3, infoList.length))}>查看更多</Button>
+                    }
                 </div>
             );
         }
