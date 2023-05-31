@@ -44,7 +44,7 @@ class RecommendationSystem:
         action = self._model.get_action([user_id], obs).squeeze()
         if self._model.num_epochs > 100:
             preference = torch.Tensor([action[self._restId2nnId_map[i]].item() for i in restaurants_id])
-        order_idx = preference.sort(dim=-1, descending=True)[1]
+        order_idx = preference.sort(dim=-1, descending=True)[1].numpy()
         return list(restaurants_id[order_idx])
 
     def update_results(self, user_id: str, choice: int):
